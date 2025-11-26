@@ -1,41 +1,33 @@
-
-def split_by_capitals(formula):
-    if not formula:
-        return []  
-
-    split_formula = []
+def split_before_uppercases(formula):
     start = 0
-    for i in range(1, len(formula)):
-        if formula[i].isupper():
-            split_formula.append(formula[start:i])
-            start = i
-    split_formula.append(formula[start:])
-    return split_formula
+    end = 1
+    elements_lst = []
     
-def split_at_number(formula):
-    digit_location = -1
-    for i in range(len(formula)):
-        if formula[i].isdigit():   
-            digit_location = i
-            break
-        
-    if digit_location == -1:  
-        return (formula, 1)
-    else:
-        prefix = formula[:digit_location]
-        number = int(formula[digit_location:])
-        return (prefix, number)
+    if not formula:
+        return elements_lst
+
+    while end < len(formula):
+        if formula[end].isupper():
+            elements_lst.append(formula[start:end])
+            start = end
+        end+=1  
+     
+    elements_lst.append(formula[start:])
+    
+    return elements_lst
+
+def split_at_digit(formula):
+    for char_index, char in enumerate(formula):
+        if char.isdigit():
+            return formula[:char_index], int(formula[char_index:])
+    return formula, 1
 
 def count_atoms_in_molecule(molecular_formula):
-    """Takes a molecular formula (string) and returns a dictionary of atom counts.
-    Example: 'H2O' → {'H': 2, 'O': 1}
-    """
-    atom_dict = {}
-    for atom in split_by_capitals(molecular_formula):
-        atom_name, atom_count = split_at_number(atom)
-        atom_dict[atom_name] = atom_count
-    return atom_dict
-
+    atoms_count_dict = {}
+    for atom in split_before_uppercases(molecular_formula):
+        atom_name, atom_count = split_at_digit(atom)
+        atoms_count_dict[atom_name] = atoms_count_dict.get(atom_name, 0) + atom_count    
+    return atoms_count_dict
 
 def parse_chemical_reaction(reaction_equation):
     """Takes a reaction equation (string) and returns reactants and products as lists.  
@@ -51,3 +43,4 @@ def count_atoms_in_reaction(molecules_list):
     for molecule in molecules_list:
         molecules_atoms_count.append(count_atoms_in_molecule(molecule))
     return molecules_atoms_count
+
